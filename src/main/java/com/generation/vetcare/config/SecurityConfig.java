@@ -2,9 +2,11 @@ package com.generation.vetcare.config;
 
 import com.generation.vetcare.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,15 +14,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final List<String> origenesPermitidos;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    // Por defecto solo permite el Angular local. En Render se puede ampliar con la variable
+    // APP_CORS_ALLOWED_ORIGINS (varias direcciones separadas por comas).
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          @Value("${app.cors.allowed-origins:http://localhost:4200}") List<String> origenesPermitidos) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.origenesPermitidos = origenesPermitidos;
     }
 
     @Bean
@@ -29,12 +41,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(origenesPermitidos);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", config);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas públicas
+                        // Rutas publicas
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
@@ -49,14 +74,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/veterinarios/**", "/api/especialidades/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/veterinarios/**", "/api/especialidades/**").hasRole("ADMIN")
 
-                        // Dueños, mascotas y citas: escritura para recepción y admin
+                        // Duenos, mascotas y citas: escritura para recepcion y admin
                         .requestMatchers(HttpMethod.POST, "/api/duenos/**", "/api/mascotas/**", "/api/citas/**").hasAnyRole("RECEPCIONISTA", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/duenos/**", "/api/mascotas/**").hasAnyRole("RECEPCIONISTA", "ADMIN")
 
                         // Borrar: solo ADMIN
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
 
-                        // Todo lo demás (lecturas): cualquier usuario autenticado
+                        // Todo lo demas (lecturas): cualquier usuario autenticado
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

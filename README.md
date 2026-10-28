@@ -2,11 +2,11 @@
 
 API REST para gestionar una clínica veterinaria: dueños, mascotas, veterinarios, especialidades, citas y usuarios, con autenticación JWT y permisos por rol.
 
-> **Demo en línea**
-> - Aplicación web: https://martiny-developer.github.io/vetcare-web/
-> - API: https://vetcare-api-7nmw.onrender.com
->
-> La API corre en un plan gratuito que se apaga por inactividad: la primera petición puede tardar hasta un minuto en responder.
+**Demo en línea**
+ Aplicación web: https://martiny-developer.github.io/vetcare-web/
+ API: https://vetcare-api-7nmw.onrender.com
+
+ La API corre en un plan gratuito que se apaga por inactividad: la primera petición puede tardar hasta un minuto en responder.
 
 ## Captura
 

@@ -1,4 +1,4 @@
-# VetCare API
+# 🩺VetCare API
 
 API REST para gestionar una clínica veterinaria: dueños, mascotas, veterinarios, especialidades, citas y usuarios, con autenticación JWT y permisos por rol.
 
@@ -22,6 +22,19 @@ API REST para gestionar una clínica veterinaria: dueños, mascotas, veterinario
 
 Son cuentas de prueba con datos ficticios.
 
+
+## Roles y permisos
+
+| Acción | ADMIN | RECEPCIONISTA | VETERINARIO |
+|---|:---:|:---:|:---:|
+| Consultar dueños, mascotas, veterinarios, especialidades y citas | Sí | Sí | Sí |
+| Crear y editar dueños y mascotas | Sí | Sí | No |
+| Agendar citas | Sí | Sí | No |
+| Atender citas | Sí | No | Sí |
+| Crear veterinarios y especialidades | Sí | No | No |
+| Eliminar registros | Sí | No | No |
+| Crear usuarios | Sí | No | No |
+
 ## Tecnologías
 
 - Java 21
@@ -40,17 +53,6 @@ Son cuentas de prueba con datos ficticios.
 - Validación de datos de entrada y respuestas de error en JSON con el código HTTP correcto (400, 401, 403, 404, 409).
 - CORS configurable por variable de entorno.
 
-## Roles y permisos
-
-| Acción | ADMIN | RECEPCIONISTA | VETERINARIO |
-|---|:---:|:---:|:---:|
-| Consultar dueños, mascotas, veterinarios, especialidades y citas | Sí | Sí | Sí |
-| Crear y editar dueños y mascotas | Sí | Sí | No |
-| Agendar citas | Sí | Sí | No |
-| Atender citas | Sí | No | Sí |
-| Crear veterinarios y especialidades | Sí | No | No |
-| Eliminar registros | Sí | No | No |
-| Crear usuarios | Sí | No | No |
 
 ## Endpoints principales
 

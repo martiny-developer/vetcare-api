@@ -136,48 +136,6 @@ Decisiones de diseño:
 | Base de datos | Neon | PostgreSQL con conexión SSL |
 | Frontend | GitHub Pages | Flujo de GitHub Actions que compila Angular y lo publica en cada cambio de la rama `main` |
 
-## Ejecutar en local
-
-### API
-
-Requisitos: Java 21 y PostgreSQL.
-
-1. Crea la base de datos:
-
-   ```sql
-   CREATE DATABASE vetcare;
-   ```
-
-2. Revisa el usuario y la contraseña de tu PostgreSQL en `src/main/resources/application.properties`.
-3. Inicia la aplicación:
-
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-La API queda en `http://localhost:8080`. Al arrancar por primera vez se crea el usuario `admin` de demostración.
-
-### Frontend
-
-Requisitos: una versión de Node.js compatible con Angular 22.
-
-```bash
-npm install
-npm start
-```
-
-La aplicación queda en `http://localhost:4200`. La dirección de la API está en `src/environments/environment.ts`; para usar tu API local, cámbiala a `http://localhost:8080/api`.
-
-### Variables de entorno en producción
-
-| Variable | Descripción |
-|---|---|
-| `DATABASE_URL` | URL JDBC, por ejemplo `jdbc:postgresql://HOST/NOMBRE_BD?sslmode=require` |
-| `DATABASE_USER` | Usuario de la base de datos |
-| `DATABASE_PASSWORD` | Contraseña de la base de datos |
-| `JWT_SECRET` | Clave para firmar los tokens (mínimo 32 caracteres) |
-| `APP_CORS_ALLOWED_ORIGINS` | Orígenes permitidos separados por comas, sin espacios |
-
 ## Retos que resolví
 
 - **Relaciones bidireccionales:** serializar dueño y mascotas a JSON producía un ciclo infinito. Lo resolví con DTO de resumen que cortan la recursión.
@@ -187,14 +145,6 @@ La aplicación queda en `http://localhost:4200`. La dirección de la API está e
 - **Servidor gratuito que se duerme:** el login avisa con claridad que el arranque puede tardar.
 - **Creación de usuarios segura:** solo un administrador puede crear usuarios, para que nadie pueda registrarse a sí mismo como `ADMIN`.
 
-## Limitaciones y mejoras futuras
-
-- Agregar pruebas automáticas.
-- Reemplazar `ddl-auto=update` por migraciones con Flyway.
-- Validar que un veterinario no tenga dos citas a la misma hora.
-- Agregar la cancelación de citas y la edición de veterinarios.
-- Limitar que cada veterinario atienda solo sus propias citas.
-- Documentar la API con OpenAPI.
 
 ## Autor
 
